@@ -1,6 +1,6 @@
 from numba import jit
 from mpmath import *
-
+from itertools import product
 mp.prec =1000
 @jit(nopython=True,cache=True,nogil=True)
 def if_greater_than_one(a,b,c,d):
@@ -31,9 +31,9 @@ def if_lesser_than_x(a,b,c,d,x):
 def comparator_equal(vector1, vector2):
     a, b, c, d = vector1
     e, f, g, h = vector2
-    if a == e and b == f and c == g and d == h:
-        return True
-    return False
+    left_expression = (a * a) + (2 * b * b) + (c * c) + (2 * d * d) - ((e * e) + (2 * f * f) + (g * g) + (2 * h * h))
+    right_expresion = (e * f) + (g * h) - (a * b) - (c * d)
+    return left_expression**2 == 8*(right_expresion**2)
 
 @jit(nopython=True, cache=True, nogil=True)
 def adition(vector1, vector2):
@@ -41,6 +41,10 @@ def adition(vector1, vector2):
     e, f, g, h = vector2
     return [a + e, b + f, c + g, d + h]
 
+def difference(vector1, vector2):
+    a, b, c, d = vector1
+    e, f, g, h = vector2
+    return [a - e, b - f, c - g, d - h]
 @jit(nopython=True, cache=True, nogil=True)
 def neutral_element():
     return [0, 0, 0, 0]
@@ -73,13 +77,7 @@ def comparator_bigger(vector1, vector2):
         return left_expression ** 2 < 8 * (right_expresion ** 2)
     return left_expression ** 2 > 8 * (right_expresion ** 2)
 
-@jit(nopython=True, cache=True, nogil=True)
 def generate_vector_R(fro, to, x):
-    vectors = []
-    for a in range(fro, to + 1):
-        for b in range(fro, to + 1):
-            for c in range(fro, to + 1):
-                for d in range(fro, to + 1):
-                    if if_greater_than_one(a, b, c, d) and if_lesser_than_x(a, b, c, d, x):
-                        vectors.append([a, b, c, d])
-    return vectors
+    for i in product(range(fro, to + 1), repeat=4):
+        if if_greater_than_one(i[0], i[1], i[2], i[3]) and if_lesser_than_x(i[0], i[1], i[2], i[3], x):
+            yield i

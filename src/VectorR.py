@@ -1,7 +1,5 @@
 from numba import jit
-from mpmath import *
 from itertools import product
-mp.prec =1000
 @jit(nopython=True,cache=True,nogil=True)
 def if_greater_than_one(a,b,c,d):
     left_expression = (a * a) + (2 * b * b) + (c * c) + (2 * d * d) - 1
@@ -40,6 +38,8 @@ def adition(vector1, vector2):
     a, b, c, d = vector1
     e, f, g, h = vector2
     return [a + e, b + f, c + g, d + h]
+
+@jit(nopython=True, cache=True, nogil=True)
 
 def difference(vector1, vector2):
     a, b, c, d = vector1

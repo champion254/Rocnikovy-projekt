@@ -1,7 +1,8 @@
 from itertools import *
 from igraph import *
 import VectorR
-
+import numpy as np
+from numba import njit
 def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                       neutral_element):
     produc = product(vector,repeat =G.ecount())
@@ -88,29 +89,40 @@ def get_cut_of_vertices(G:Graph, vertice):
     ls = vertices
     return [ls,list(final_set)]
 
+njit(nogil=True)
+def check_if_valid_elements(vectors,good_element):
+    for i in vectors:
+        if not good_element(i):
+            return False
+    return True
+njit(nogil=True)
+def find_biggest_element(vectors,comparator_bigger_than):
+    temp = None
+    for i in vectors:
+        if temp is None:
+            temp = i
+            continue
+        if comparator_bigger_than(i,temp):
+            temp = i
+    return temp
+njit(nogil=True)
 def graphs_flow(generator, matrix,comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                        difference,neutral_element,good_element):
     produc = product(generator,repeat = matrix[0].size)
     temp_lowest = None
     for c in produc:
-        temp_biggest = None
+        vectors = [*c]
         for i in range(len(matrix)):
-            temp = None
+            temp = neutral_element()
             for j in range(len(matrix[i])):
-                if temp is None:
-                    temp = c[j]
-                    continue
                 if matrix[i][j] == 1:
                     temp = addition(temp,c[j])
                 if matrix[i][j] == -1:
                     temp = difference(temp,c[j])
-            if not good_element(temp):
-                continue
-            if temp_biggest is None:
-                temp_biggest = temp
-                continue
-            if comparator_bigger_than(temp,temp_biggest):
-                temp_biggest = temp
+            vectors.append(temp)
+        if not check_if_valid_elements(vectors,good_element):
+            continue
+        temp_biggest = find_biggest_element(vectors,comparator_bigger_than)
         if temp_lowest is None:
             temp_lowest = temp_biggest
             continue

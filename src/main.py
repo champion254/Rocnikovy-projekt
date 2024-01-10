@@ -1,7 +1,8 @@
 from igraph import *
+
 import VectorR
-from flows import graph_flows_brute,graphs_flow,create_matrix
-from itertools import *
+from flows import graph_flows_brute, graphs_flow, create_matrix
+
 
 def main1():
     a = VectorR.generate_vector_R(-2, 2, 5)

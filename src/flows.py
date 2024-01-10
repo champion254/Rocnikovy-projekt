@@ -1,6 +1,5 @@
 from itertools import *
 from igraph import *
-import VectorR
 import numpy as np
 from numba import njit
 def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
@@ -126,7 +125,7 @@ def graphs_flow(generator, matrix,comparator_equal, comparator_lesser_than, comp
         if temp_lowest is None:
             temp_lowest = temp_biggest
             continue
-        if temp_biggest is not None and comparator_lesser_than(temp_biggest,temp_lowest):
+        if comparator_lesser_than(temp_biggest,temp_lowest):
             temp_lowest = temp_biggest
             print(temp_lowest)
     return temp_lowest

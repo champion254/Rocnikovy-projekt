@@ -37,4 +37,4 @@ def good_element(vector):
 
 
 if __name__ == '__main__':
-    main1()
+    main2()

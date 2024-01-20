@@ -94,7 +94,6 @@ def get_cut_of_vertices(G: Graph, vertice):
     return [ls, list(final_set)]
 
 
-@njit(nogil=True)
 def check_if_valid_elements(vectors, good_element):
     for i in vectors:
         if not good_element(i):
@@ -102,7 +101,6 @@ def check_if_valid_elements(vectors, good_element):
     return True
 
 
-@njit(nogil=True)
 def find_biggest_element(vectors, comparator_bigger_than):
     temp = None
     for i in vectors:
@@ -114,7 +112,6 @@ def find_biggest_element(vectors, comparator_bigger_than):
     return temp
 
 
-@njit(nogil=True)
 def graphs_flow(generator, matrix, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                 difference, neutral_element, good_element):
     produc = product(generator, repeat=matrix[0].size)

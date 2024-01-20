@@ -21,15 +21,6 @@ def main2():
     print(result)
 
 
-def main3():
-    a = VectorR.generate_vector_R(-2, 2, 5)
-    a = list(a)
-    G = Graph(n=2, edges=[[0, 1], [1, 0]], directed=True)
-    result = graph_flows_brute(G, a, VectorR.comparator_equal, VectorR.comparator_lesser,
-                               VectorR.comparator_bigger, VectorR.adition, VectorR.neutral_element)
-    print(result)
-
-
 def good_element(vector):
     if VectorR.if_greater_than_one(*vector) and VectorR.if_lesser_than_x(*vector, 5):
         return True

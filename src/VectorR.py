@@ -1,5 +1,6 @@
 from itertools import product
-
+from numba.core.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
 from numba import *
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)

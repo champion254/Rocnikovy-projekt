@@ -1,7 +1,6 @@
 from itertools import *
 from igraph import *
 import numpy as np
-from numba import njit
 
 
 def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,

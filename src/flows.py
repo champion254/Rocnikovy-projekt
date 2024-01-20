@@ -2,9 +2,11 @@ from itertools import *
 from igraph import *
 import numpy as np
 from numba import njit
+
+
 def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                       neutral_element):
-    produc = product(vector,repeat =G.ecount())
+    produc = product(vector, repeat=G.ecount())
     temp = None
     for c in produc:
         G.es['weight'] = list(c)
@@ -16,6 +18,7 @@ def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than
             if comparator_lesser_than(temp2, temp):
                 temp = temp2
     return temp
+
 
 def find_biggest(G: Graph, vector, comparator_equal, comparator_bigger_than):
     weights = G.es["weight"]
@@ -48,23 +51,24 @@ def check_flow(G: Graph, addition, comparator_equal):
         return False
     return True
 
-def create_matrix(G:Graph):
-    G_directed:Graph = G
-    G_undirected:Graph = G.as_undirected()
-    G_spanning_tree:Graph = G_undirected.spanning_tree()
-    G_not_spanning_tree:Graph = (G_directed - G_spanning_tree.as_directed())
+
+def create_matrix(G: Graph):
+    G_directed: Graph = G
+    G_undirected: Graph = G.as_undirected()
+    G_spanning_tree: Graph = G_undirected.spanning_tree()
+    G_not_spanning_tree: Graph = (G_directed - G_spanning_tree.as_directed())
     G_spanning_tree_edges = G_spanning_tree.get_edgelist()
     G_not_spanning_tree.es["label"] = [i for i in range(G_not_spanning_tree.ecount())]
     G_not_spanning_tree_edges = G_not_spanning_tree.get_edgelist()
-    matrix = np.zeros((G_spanning_tree.ecount(),G_not_spanning_tree.ecount()))
+    matrix = np.zeros((G_spanning_tree.ecount(), G_not_spanning_tree.ecount()))
     lst = []
     for i in G_spanning_tree_edges:
         G_spanning_tree.delete_edges(i)
         lst.append(get_cut_of_vertices(G_spanning_tree, i[0]))
         G_spanning_tree.add_edges([i])
 
-    dc = {edge:i for i,edge in enumerate(G_not_spanning_tree_edges)}
-    for index,i in enumerate(lst):
+    dc = {edge: i for i, edge in enumerate(G_not_spanning_tree_edges)}
+    for index, i in enumerate(lst):
         set1 = set(i[0])
         set2 = set(i[1])
         for j in G_not_spanning_tree_edges:
@@ -81,33 +85,39 @@ def create_matrix(G:Graph):
                     matrix[index][dc[j]] = -1
     return matrix
 
-def get_cut_of_vertices(G:Graph, vertice):
+
+def get_cut_of_vertices(G: Graph, vertice):
     se = {i for i in range(G.vcount())}
-    [vertices, parents] = G.dfs(vid = vertice)
+    [vertices, parents] = G.dfs(vid=vertice)
     final_set = se - set(vertices)
     ls = vertices
-    return [ls,list(final_set)]
+    return [ls, list(final_set)]
 
-njit(nogil=True)
-def check_if_valid_elements(vectors,good_element):
+
+@njit(nogil=True)
+def check_if_valid_elements(vectors, good_element):
     for i in vectors:
         if not good_element(i):
             return False
     return True
-njit(nogil=True)
-def find_biggest_element(vectors,comparator_bigger_than):
+
+
+@njit(nogil=True)
+def find_biggest_element(vectors, comparator_bigger_than):
     temp = None
     for i in vectors:
         if temp is None:
             temp = i
             continue
-        if comparator_bigger_than(i,temp):
+        if comparator_bigger_than(i, temp):
             temp = i
     return temp
-njit(nogil=True)
-def graphs_flow(generator, matrix,comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
-                       difference,neutral_element,good_element):
-    produc = product(generator,repeat = matrix[0].size)
+
+
+@njit(nogil=True)
+def graphs_flow(generator, matrix, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
+                difference, neutral_element, good_element):
+    produc = product(generator, repeat=matrix[0].size)
     temp_lowest = None
     for c in produc:
         vectors = [*c]
@@ -115,17 +125,17 @@ def graphs_flow(generator, matrix,comparator_equal, comparator_lesser_than, comp
             temp = neutral_element()
             for j in range(len(matrix[i])):
                 if matrix[i][j] == 1:
-                    temp = addition(temp,c[j])
+                    temp = addition(temp, c[j])
                 if matrix[i][j] == -1:
-                    temp = difference(temp,c[j])
+                    temp = difference(temp, c[j])
             vectors.append(temp)
-        if not check_if_valid_elements(vectors,good_element):
+        if not check_if_valid_elements(vectors, good_element):
             continue
-        temp_biggest = find_biggest_element(vectors,comparator_bigger_than)
+        temp_biggest = find_biggest_element(vectors, comparator_bigger_than)
         if temp_lowest is None:
             temp_lowest = temp_biggest
             continue
-        if comparator_lesser_than(temp_biggest,temp_lowest):
+        if comparator_lesser_than(temp_biggest, temp_lowest):
             temp_lowest = temp_biggest
             print(temp_lowest)
     return temp_lowest

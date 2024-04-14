@@ -44,10 +44,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(backtrack_matrix, [[1, -1, 1], [1, 4, 1], [4, 1, 4]])
 
     def test_dive_into3(self):
-        matrix = [[1,0,1,1],
-                  [1,-1,1,0],
-                  [1,0,0,-1],
-                  [0,0,-1,1]]
+        matrix = [[1, 0, 1, 1],
+                  [1, -1, 1, 0],
+                  [1, 0, 0, -1],
+                  [0, 0, -1, 1]]
         backtrack_matrix1 = []
         backtrack_matrix2 = []
         backtrack_matrix3 = []
@@ -80,33 +80,32 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(backtrack_matrix3, [[3, 3, 3, 0], [3, -4, 3, 0], [12, 5, 3, -9]])
         dive_into(matrix, backtrack_matrix3, 10, __addition, __difference, __neutral_element, 3)
         self.assertEqual(backtrack_matrix3, [[3, 3, 3, 0], [3, -4, 3, 0], [12, 5, 3, -9], [22, 5, -7, 1]])
+
     def test_Vector_of_generators(self):
         generator_function = lambda: range(3)
         generator = VectorofGenerators(generator_function, 3)
         for i in range(3):
-            self.assertEqual(next(generator),(0,i))
+            self.assertEqual(next(generator), (0, i))
             for j in range(3):
-                self.assertEqual(next(generator),(1,j))
+                self.assertEqual(next(generator), (1, j))
                 for k in range(3):
-                    self.assertEqual(next(generator),(2,k))
+                    self.assertEqual(next(generator), (2, k))
         self.assertRaises(StopIteration, next, generator)
 
     def test_best_vector_find(self):
         good_element = lambda x: x > 5
         comparator_bigger_than = lambda x, y: x > y
         comparator_lesser_than = lambda x, y: x < y
-        self.assertEqual(best_vector_find([5, 10,15], None, good_element, comparator_bigger_than,
+        self.assertEqual(best_vector_find([5, 10, 15], None, good_element, comparator_bigger_than,
                                           comparator_lesser_than), None)
-        self.assertEqual(best_vector_find([10,15], None, good_element, comparator_bigger_than,
-                                            comparator_lesser_than), 15)
+        self.assertEqual(best_vector_find([10, 15], None, good_element, comparator_bigger_than,
+                                          comparator_lesser_than), 15)
         self.assertEqual(best_vector_find([6, 7, 8], 10, good_element, comparator_bigger_than,
-                                            comparator_lesser_than), 8)
-        
-
+                                          comparator_lesser_than), 8)
 
     def test_graph_flow_is_valid(self):
         list1 = [1, 2, 3]
-        list2 =[4, 5, 6]
+        list2 = [4, 5, 6]
         list3 = [0, 8, 9]
         good_element = lambda x: x > 0
         self.assertTrue(graph_flow_is_valid(list1, good_element, 0))
@@ -135,6 +134,11 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_than,
                                               comparator_bigger_than, addition, difference, neutral_element,
                                               good_element), 8)
+        matrix = [[1, 1, -1],
+                  [1, 1, -1]]
+        self.assertEqual(calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_than,
+                                              comparator_bigger_than, addition, difference, neutral_element,
+                                              good_element), 4)
 
     def test_calculate_best_flows2(self):
         G = Graph(n=3, edges=[[0, 1], [1, 2], [2, 0]], directed=True)

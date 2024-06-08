@@ -1,13 +1,10 @@
-from numba import njit
-
-
 def graph_flow_backtrack(backtrack_matrix):
     backtrack_matrix.pop()
     return backtrack_matrix
 
 
 def dive_into(matrix, backtrack_matrix, vector, addition, difference, neutral_element, depth):
-    if (depth == 0):
+    if depth == 0:
         backtrack_matrix.append(list())
         for i in range(len(matrix)):
             temp = neutral_element()
@@ -38,8 +35,9 @@ def dive_into(matrix, backtrack_matrix, vector, addition, difference, neutral_el
             backtrack_matrix[depth].append(temp)
     return backtrack_matrix
 
+
 def graph_flow_depth_check_generate_list(backtrack_matrix):
-    last_ones = [[]]*len(backtrack_matrix)
+    last_ones = [[]] * len(backtrack_matrix)
     for i in range(len(backtrack_matrix)):
         temp = [j for j in range(len(backtrack_matrix[i])) if backtrack_matrix[i][j] == 1
                 or backtrack_matrix[i][j] == -1]
@@ -47,17 +45,21 @@ def graph_flow_depth_check_generate_list(backtrack_matrix):
         last_ones[i] = temp
     return last_ones
 
+
 def graph_flow_is_valid(backtrack_matrix, good_element, depth):
     for i in backtrack_matrix:
         if not good_element(i):
             return False
     return True
-def partial_graph_flow_is_valid(list_matrix_ones, good_element, depth,list_backtrack_last):
+
+
+def partial_graph_flow_is_valid(list_matrix_ones, good_element, depth, list_backtrack_last):
     for i in range(len(list_backtrack_last)):
         if i is list and len(i) == 0: continue
         if not good_element(list_backtrack_last[i]) and list_matrix_ones[i] == depth:
             return False
     return True
+
 
 def calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                          difference, neutral_element, good_element):
@@ -65,15 +67,15 @@ def calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_
     list_matrix_ones = graph_flow_depth_check_generate_list(matrix)
     list = []
     depth = -1
-    vectors = VectorofGenerators(generator, len(matrix[0]),list)
+    vectors = VectorofGenerators(generator, len(matrix[0]), list)
     best_vector = None
     original_vectors = []
     for vector in vectors:
-        if depth+1 == len(matrix[0]):
+        if depth + 1 == len(matrix[0]):
             best_vector = best_vector_find(backtrack_matrix[-1] + original_vectors, best_vector, good_element
-                                          ,comparator_bigger_than, comparator_lesser_than)
+                                           , comparator_bigger_than, comparator_lesser_than)
         if depth >= vector[0]:
-            while depth != vector[0]-1:
+            while depth != vector[0] - 1:
                 graph_flow_backtrack(backtrack_matrix)
                 original_vectors.pop()
                 depth -= 1
@@ -81,14 +83,15 @@ def calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_
             depth += 1
             original_vectors.append(vector[1])
             dive_into(matrix, backtrack_matrix, vector[1], addition, difference, neutral_element, depth)
-        if not partial_graph_flow_is_valid(list_matrix_ones, good_element, depth,backtrack_matrix[-1]):
+        if not partial_graph_flow_is_valid(list_matrix_ones, good_element, depth, backtrack_matrix[-1]):
             list.append(depth)
     if depth + 1 == len(matrix[0]):
         best_vector = best_vector_find(backtrack_matrix[-1] + original_vectors, best_vector, good_element
-                                  ,comparator_bigger_than, comparator_lesser_than)
+                                       , comparator_bigger_than, comparator_lesser_than)
     return best_vector
 
-def best_vector_find(list,best_vector,good_element,comparator_bigger_than,comparator_lesser_than):
+
+def best_vector_find(list, best_vector, good_element, comparator_bigger_than, comparator_lesser_than):
     if graph_flow_is_valid(list, good_element, 0):
         if best_vector is None:
             best_vector = find_biggest_element(list, comparator_bigger_than)
@@ -98,7 +101,8 @@ def best_vector_find(list,best_vector,good_element,comparator_bigger_than,compar
             best_vector = temp
     return best_vector
 
-def VectorofGenerators(generatorfunction, size,list):
+
+def VectorofGenerators(generatorfunction, size, list):
     depth = 0
 
     def recursion(generatorfunction, depthrec):

@@ -1,7 +1,9 @@
 import unittest
-from flowsbacktrack import *
-from flows import create_matrix
+
 from igraph import *
+
+from flows import create_matrix
+from flowsbacktrack import *
 
 
 class MyTestCase(unittest.TestCase):
@@ -80,6 +82,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(backtrack_matrix3, [[3, 3, 3, 0], [3, -4, 3, 0], [12, 5, 3, -9]])
         dive_into(matrix, backtrack_matrix3, 10, __addition, __difference, __neutral_element, 3)
         self.assertEqual(backtrack_matrix3, [[3, 3, 3, 0], [3, -4, 3, 0], [12, 5, 3, -9], [22, 5, -7, 1]])
+
     def test_partial_graph_flow_is_valid(self):
         list_matrix_ones = [0, 1, 2, 3]
         good_element = lambda x: x > 0
@@ -98,20 +101,22 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(partial_graph_flow_is_valid(list_matrix_ones, good_element, depth, list_backtrack_last))
         list_backtrack_last = [1, 2, 3, 5]
         self.assertTrue(partial_graph_flow_is_valid(list_matrix_ones, good_element, depth, list_backtrack_last))
+
     def test_graph_flow_depth_check_generate_list(self):
         matrix = [[1, 0, 1],
                   [1, -1, 1],
                   [1, 0, 0]]
         self.assertEqual(graph_flow_depth_check_generate_list(matrix), [2, 2, 0])
         matrix = [[1, 0, 1, 1],
-                    [1, -1, 1, 0],
-                    [1, 0, 0, -1],
-                    [0, 0, 0, 0]]
+                  [1, -1, 1, 0],
+                  [1, 0, 0, -1],
+                  [0, 0, 0, 0]]
         self.assertEqual(graph_flow_depth_check_generate_list(matrix), [3, 2, 3, []])
+
     def test_Vector_of_generators(self):
         generator_function = lambda: range(3)
         list = []
-        generator = VectorofGenerators(generator_function, 3,list)
+        generator = VectorofGenerators(generator_function, 3, list)
         for i in range(3):
             self.assertEqual(next(generator), (0, i))
             for j in range(3):
@@ -126,12 +131,11 @@ class MyTestCase(unittest.TestCase):
             for j in range(3):
                 self.assertEqual(next(generator), (1, j))
                 for k in range(3):
-                    if(k == 0):
+                    if (k == 0):
                         list.append(1)
                         break
                     self.assertEqual(next(generator), (2, k))
         self.assertRaises(StopIteration, next, generator)
-
 
     def test_best_vector_find(self):
         good_element = lambda x: x > 5

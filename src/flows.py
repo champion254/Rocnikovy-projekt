@@ -1,6 +1,7 @@
 from itertools import *
 from igraph import *
 import numpy as np
+import networkx as nx
 
 
 def graph_flows_brute(G: Graph, vector, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
@@ -50,9 +51,17 @@ def check_flow(G: Graph, addition, comparator_equal):
         return False
     return True
 
+def create_wheel_graph(n):
+    nx_wheel_graph = nx.wheel_graph(n)
+    edges = list(nx_wheel_graph.edges())
+    ig_wheel_graph = Graph()
+    ig_wheel_graph.add_vertices(n)
+    ig_wheel_graph.add_edges(edges)
+
+    return ig_wheel_graph
 
 def create_matrix(G: Graph):
-    G_directed: Graph = G
+    G_directed: Graph = G.as_directed()
     G_undirected: Graph = G.as_undirected()
     G_spanning_tree: Graph = G_undirected.spanning_tree()
     G_not_spanning_tree: Graph = (G_directed - G_spanning_tree.as_directed())
@@ -113,8 +122,9 @@ def find_biggest_element(vectors, comparator_bigger_than):
 
 def graphs_flow(generator, matrix, comparator_equal, comparator_lesser_than, comparator_bigger_than, addition,
                 difference, neutral_element, good_element):
-    produc = product(generator, repeat=matrix[0].size)
+    produc = product(generator(), repeat= len(matrix[0]))
     temp_lowest = None
+    temp_vector = None
     for c in produc:
         vectors = [*c]
         for i in range(len(matrix)):
@@ -130,8 +140,9 @@ def graphs_flow(generator, matrix, comparator_equal, comparator_lesser_than, com
         temp_biggest = find_biggest_element(vectors, comparator_bigger_than)
         if temp_lowest is None:
             temp_lowest = temp_biggest
+            temp_vector = vectors
             continue
-        if comparator_lesser_than(temp_biggest, temp_lowest):
+        if comparator_lesser_than(temp_biggest, temp_lowest) and good_element(temp_biggest):
             temp_lowest = temp_biggest
-            print(temp_lowest)
-    return temp_lowest
+            temp_vector = vectors
+    return temp_lowest,temp_vector

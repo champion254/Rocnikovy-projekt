@@ -70,10 +70,14 @@ def calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_
     vectors = VectorofGenerators(generator, len(matrix[0]), list)
     best_vector = None
     original_vectors = []
+    validflow = None
     for vector in vectors:
         if depth + 1 == len(matrix[0]):
+            temp = best_vector
             best_vector = best_vector_find(backtrack_matrix[-1] + original_vectors, best_vector, good_element
                                            , comparator_bigger_than, comparator_lesser_than)
+            if temp != best_vector:
+                validflow = backtrack_matrix[-1] + original_vectors
         if depth >= vector[0]:
             while depth != vector[0] - 1:
                 graph_flow_backtrack(backtrack_matrix)
@@ -86,9 +90,12 @@ def calculate_best_flows(generator, matrix, comparator_equal, comparator_lesser_
         if not partial_graph_flow_is_valid(list_matrix_ones, good_element, depth, backtrack_matrix[-1]):
             list.append(depth)
     if depth + 1 == len(matrix[0]):
+        temp = best_vector
         best_vector = best_vector_find(backtrack_matrix[-1] + original_vectors, best_vector, good_element
                                        , comparator_bigger_than, comparator_lesser_than)
-    return best_vector
+        if temp != best_vector:
+            validflow = backtrack_matrix[-1] + original_vectors
+    return best_vector,validflow
 
 
 def best_vector_find(list, best_vector, good_element, comparator_bigger_than, comparator_lesser_than):

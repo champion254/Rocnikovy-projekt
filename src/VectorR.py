@@ -95,3 +95,7 @@ def generate_vector_R(fro, to, x):
     for i in product(range(fro, to + 1), repeat=4):
         if if_greater_than_one(i[0], i[1], i[2], i[3]) and if_lesser_than_x(i[0], i[1], i[2], i[3], x):
             yield i
+def generate_vector_R_smaller_than_vector(fro, to, x):
+    for i in product(range(fro, to + 1), repeat=4):
+        if if_greater_than_one(i[0], i[1], i[2], i[3]) and (comparator_lesser(i, x) or comparator_equal(i, x)):
+            yield i
